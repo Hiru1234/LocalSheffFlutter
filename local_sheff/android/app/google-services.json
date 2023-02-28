@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "50108710222",
+    "project_id": "localsheff-authentication",
+    "storage_bucket": "localsheff-authentication.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:50108710222:android:e4cded011448c2e861b21f",
+        "android_client_info": {
+          "package_name": "com.example.local_sheff"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "50108710222-dp257p3pkqkn8s446qvu5fskf0ebmlfu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.local_sheff",
+            "certificate_hash": "87061fbda11660d282d9280c197448e953ce326c"
+          }
+        },
+        {
+          "client_id": "50108710222-2tevbsf6akn2s9l26ibhqgbfnep1av3m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2cD3sKjgxJtuxnfXGuN66DV4RPCKAC70"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "50108710222-2tevbsf6akn2s9l26ibhqgbfnep1av3m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
