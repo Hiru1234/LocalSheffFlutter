@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:local_sheff/screens/customer_screens/home_screen.dart';
+import 'package:local_sheff/screens/resetPassword_screen.dart';
 import 'package:local_sheff/screens/signup_screen.dart';
 
 import '../reusable_widgets/reusable_widget.dart';
@@ -66,6 +67,10 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(
                 height: 20,
               ),
+              forgotPassword(context),
+              const SizedBox(
+                height: 20,
+              ),
               resuableButton(context, 'SIGN IN', () {
                 FirebaseAuth.instance
                     .signInWithEmailAndPassword(
@@ -91,6 +96,23 @@ class _SignInScreenState extends State<SignInScreen> {
             ]),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget forgotPassword(BuildContext context){
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: 35,
+      alignment: Alignment.bottomLeft,
+      child: TextButton(
+        child: const Text("Forgot Password?",
+          style: TextStyle(color: Colors.black, fontFamily: 'SFProDisplay'),
+          textAlign: TextAlign.left,
+        ),
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ResetPasswordScreen()));
+        },
       ),
     );
   }
