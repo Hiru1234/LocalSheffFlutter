@@ -3,18 +3,18 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:local_sheff/reusable_widgets/reusable_widget.dart';
 
-class AccountScreen extends StatefulWidget {
-  const AccountScreen({super.key});
+class CusAccountScreen extends StatefulWidget {
+  const CusAccountScreen({super.key});
 
   @override
-  State<AccountScreen> createState() => _AccountScreenState();
+  State<CusAccountScreen> createState() => _CusAccountScreenState();
 }
 
-class _AccountScreenState extends State<AccountScreen> {
+class _CusAccountScreenState extends State<CusAccountScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: const Text("Account Page"),
+    return const Scaffold(
+      body: Text("Account Page"),
     );
   }
 }

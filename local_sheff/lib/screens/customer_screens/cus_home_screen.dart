@@ -3,20 +3,20 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:local_sheff/reusable_widgets/reusable_widget.dart';
-import 'package:local_sheff/screens/customer_screens/account_screen.dart';
-import 'package:local_sheff/screens/customer_screens/browse_screen.dart';
-import 'package:local_sheff/screens/customer_screens/cart_screen.dart';
-import 'package:local_sheff/screens/customer_screens/search_screen.dart';
+import 'package:local_sheff/screens/customer_screens/cus_account_screen.dart';
+import 'package:local_sheff/screens/customer_screens/cus_browse_screen.dart';
+import 'package:local_sheff/screens/customer_screens/cus_cart_screen.dart';
+import 'package:local_sheff/screens/customer_screens/cus_search_screen.dart';
 import 'package:local_sheff/screens/start_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class CusHomeScreen extends StatefulWidget {
+  const CusHomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<CusHomeScreen> createState() => _CusHomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _CusHomeScreenState extends State<CusHomeScreen> {
   int _selectedIndex = 0;
 
   void _navigateBottomBar(int index){
@@ -26,10 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   final List<Widget> _pages = [
-    BrowseScreen(),
-    CartScreen(),
-    SearchScreen(),
-    AccountScreen()
+    CusBrowseScreen(),
+    CusCartScreen(),
+    CusSearchScreen(),
+    CusAccountScreen()
   ];
 
   @override

@@ -25,22 +25,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Container(
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
-        height: MediaQuery
-            .of(context)
-            .size
-            .height,
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(color: Colors.white),
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-                20, MediaQuery
-                .of(context)
-                .size
-                .height * 0.2, 20, 0),
+                20, MediaQuery.of(context).size.height * 0.2, 20, 0),
             child: Column(children: <Widget>[
               Align(
                 alignment: Alignment.centerLeft,
@@ -69,15 +60,24 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 FirebaseAuth.instance
                     .sendPasswordResetEmail(email: _emailTextController.text)
                     .then((value) => {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()))
-                })
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SignInScreen()))
+                        })
                     .catchError((err) {
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text("Error"),
-                          content: Text(err.toString()),
+                          title: const Text("Error",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'SFProDisplay')),
+                          content: const Text("Invalid email format",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'SFProDisplay')),
                           actions: [
                             ElevatedButton(
                                 onPressed: () {
@@ -88,10 +88,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         );
                       });
                 });
-              }, MediaQuery
-                  .of(context)
-                  .size
-                  .width, 50),
+              }, MediaQuery.of(context).size.width, 50),
             ]),
           ),
         ),

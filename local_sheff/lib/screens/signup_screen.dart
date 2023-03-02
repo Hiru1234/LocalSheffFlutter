@@ -1,7 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:local_sheff/screens/customer_screens/home_screen.dart';
+import 'package:local_sheff/screens/customer_screens/cus_home_screen.dart';
+import 'package:local_sheff/screens/delivery_person_screens/dp_browse_screen.dart';
+import 'package:local_sheff/screens/homecook_screens/hc_home_screen.dart';
 import 'package:local_sheff/screens/registerOptions_screen.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:local_sheff/screens/start_screen.dart';
 
 import '../reusable_widgets/reusable_widget.dart';
 
@@ -13,6 +17,8 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final databaseReference = FirebaseDatabase.instance.ref().child("Users");
+
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _emailTextController = TextEditingController();
   TextEditingController _userNameTextController = TextEditingController();
@@ -75,20 +81,72 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         password: _passwordTextController.text)
                     .then((value) {
                   print("Created new account");
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => HomeScreen()));
-                }).catchError((err){
-                  showDialog(context: context, builder: (BuildContext context){
-                    return AlertDialog(
-                      title: Text("Error"),
-                      content: Text(err.toString()),
-                      actions: [
-                        ElevatedButton(onPressed: () {
-                          Navigator.of(context).pop();
-                        }, child: Text("Ok"))
-                      ],
-                    );
+                  final User? user = FirebaseAuth.instance.currentUser;
+                  final userID = user?.uid;
+                  databaseReference.child(userID!).set({
+                    'userName': _userNameTextController.text,
+                    'userEmail': _emailTextController.text,
+                    'role': StartScreen.typeOfCurrentUser.toString()
                   });
+
+                  switch (StartScreen.typeOfCurrentUser) {
+                    case UserType.customer:
+                      {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CusHomeScreen()));
+                      }
+                      break;
+                    case UserType.homecook:
+                      {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => HCHomeScreen()));
+                      }
+                      break;
+                    case UserType.deliveryPerson:
+                      {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DPHomePage()));
+                      }
+                      break;
+                  }
+                }).catchError((err) {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text("Error",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'SFProDisplay')),
+                          content: Text(
+                              textValidator(_emailTextController.text,
+                                  _passwordTextController.text),
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'SFProDisplay')),
+                          actions: [
+                            ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: standardGreyColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5)),
+                                ),
+                                child: const Text("Ok",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'SFProDisplay')))
+                          ],
+                        );
+                      });
                 });
               }, MediaQuery.of(context).size.width, 50),
             ]),

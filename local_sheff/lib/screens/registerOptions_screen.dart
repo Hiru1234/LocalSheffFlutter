@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:local_sheff/screens/signup_screen.dart';
+import 'package:local_sheff/screens/start_screen.dart';
 
 import '../reusable_widgets/reusable_widget.dart';
 
@@ -50,14 +51,17 @@ class _RegisterOptionsScreenState extends State<RegisterOptionsScreen> {
             height: 30,
           ),
           resuableButton(context, 'CUSTOMER', () {
+            StartScreen.typeOfCurrentUser = UserType.customer;
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => SignUpScreen()));
           }, MediaQuery.of(context).size.width * 0.7, 50),
           resuableButton(context, 'HOMECOOK', () {
+            StartScreen.typeOfCurrentUser = UserType.homecook;
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => SignUpScreen()));
           }, MediaQuery.of(context).size.width * 0.7, 50),
           resuableButton(context, 'DELIVERY PERSON', () {
+            StartScreen.typeOfCurrentUser = UserType.deliveryPerson;
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => SignUpScreen()));
           }, MediaQuery.of(context).size.width * 0.7, 50),

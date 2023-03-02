@@ -4,14 +4,14 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:local_sheff/screens/start_screen.dart';
 
-class BrowseScreen extends StatefulWidget {
-  const BrowseScreen({super.key});
+class CusBrowseScreen extends StatefulWidget {
+  const CusBrowseScreen({super.key});
 
   @override
-  State<BrowseScreen> createState() => _BrowseScreenState();
+  State<CusBrowseScreen> createState() => _CusBrowseScreenState();
 }
 
-class _BrowseScreenState extends State<BrowseScreen> {
+class _CusBrowseScreenState extends State<CusBrowseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

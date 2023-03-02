@@ -42,8 +42,8 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
   );
 }
 
-Container resuableButton(BuildContext context, String buttonText, Function onTap,
-    double buttonWidth, double buttonHeight) {
+Container resuableButton(BuildContext context, String buttonText,
+    Function onTap, double buttonWidth, double buttonHeight) {
   return Container(
     width: buttonWidth,
     height: buttonHeight,
@@ -62,10 +62,28 @@ Container resuableButton(BuildContext context, String buttonText, Function onTap
           }),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))),
-      child: Text(buttonText,
+      child: Text(
+        buttonText,
         style: const TextStyle(
-            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14, fontFamily: 'SFProDisplay'),
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+            fontFamily: 'SFProDisplay'),
       ),
     ),
   );
 }
+
+String textValidator(String email, String password) {
+  if (email.isEmpty || !email.contains('@') || !email.contains('.')) {
+    return 'Invalid Email format';
+  }
+
+  if (password.isEmpty) {
+    return 'Please enter a password';
+  }
+
+  return 'User already exists. Please register with another email.';
+}
+
+enum UserType { customer, homecook, deliveryPerson }

@@ -1,8 +1,13 @@
 //import 'package:flutter/src/widgets/framework.dart';
 //import 'package:flutter/src/widgets/placeholder.dart';
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:local_sheff/screens/customer_screens/home_screen.dart';
+import 'package:local_sheff/screens/customer_screens/cus_home_screen.dart';
+import 'package:local_sheff/screens/delivery_person_screens/dp_browse_screen.dart';
+import 'package:local_sheff/screens/homecook_screens/hc_home_screen.dart';
 import 'package:local_sheff/screens/resetPassword_screen.dart';
 import 'package:local_sheff/screens/signup_screen.dart';
 
@@ -18,6 +23,8 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  //final databaseReference = FirebaseDatabase.instance.ref().child("Users");
+
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _userNameTextController = TextEditingController();
 
@@ -28,12 +35,12 @@ class _SignInScreenState extends State<SignInScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(color: Colors.white),
+        decoration: const BoxDecoration(color: Colors.white),
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
@@ -76,21 +83,99 @@ class _SignInScreenState extends State<SignInScreen> {
                     .signInWithEmailAndPassword(
                         email: _userNameTextController.text,
                         password: _passwordTextController.text)
-                    .then((value) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => HomeScreen()));
-                }).catchError((onError){
-                  showDialog(context: context, builder: (BuildContext context){
-                    return AlertDialog(
-                      title: Text("Error"),
-                      content: Text(onError.toString()),
-                      actions: [
-                        ElevatedButton(onPressed: () {
-                          Navigator.of(context).pop();
-                        }, child: Text("Ok"))
-                      ],
-                    );
-                  });
+                    .then((value) async {
+                  final User? user = FirebaseAuth.instance.currentUser;
+                  final userID = user?.uid;
+                  //print("User Id is $userID");
+                  DatabaseReference reference = FirebaseDatabase.instance.ref("Users/$userID/role");
+                  DatabaseEvent event = await reference.once();
+                  //print("Role of user is ${event.snapshot.value}");
+                  String currentUserType = event.snapshot.value.toString();
+                  switch (currentUserType) {
+                    case "UserType.customer":
+                      {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CusHomeScreen()));
+                      }
+                      break;
+                    case "UserType.homecook":
+                      {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => HCHomeScreen()));
+                      }
+                      break;
+                    case "UserType.deliveryPerson":
+                      {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DPHomePage()));
+                      }
+                      break;
+                  }
+
+                  // FirebaseDatabase.instance
+                  //     .ref()
+                  //     .child("Users")
+                  //     .child(userID!)
+                  //     .once()
+                  //     .then((DataSnapshot dataSnapshot) {
+                  //       setState(() {
+                  //         if (dataSnapshot.child('role') ==
+                  //             UserType.customer.toString()) {
+                  //           Navigator.push(
+                  //               context,
+                  //               MaterialPageRoute(
+                  //                   builder: (context) => const CusHomeScreen()));
+                  //         } else if (dataSnapshot.child('role') ==
+                  //             UserType.homecook.toString()) {
+                  //           Navigator.push(
+                  //               context,
+                  //               MaterialPageRoute(
+                  //                   builder: (context) => const HCHomeScreen()));
+                  //         } else if (dataSnapshot.child('role') ==
+                  //             UserType.deliveryPerson.toString()) {
+                  //           Navigator.push(
+                  //               context,
+                  //               MaterialPageRoute(
+                  //                   builder: (context) => const DPHomePage()));
+                  //         }
+                  //       });
+                  //     } as FutureOr Function(DatabaseEvent value));
+                }).catchError((onError) {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text("Error",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'SFProDisplay')),
+                          content:  Text(onError.toString(),
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'SFProDisplay')),
+                          actions: [
+                            ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: standardGreyColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5)),
+                                ),
+                                child: const Text("Ok",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'SFProDisplay')))
+                          ],
+                        );
+                      });
                 });
               }, MediaQuery.of(context).size.width, 50),
             ]),
@@ -100,18 +185,20 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget forgotPassword(BuildContext context){
+  Widget forgotPassword(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 35,
       alignment: Alignment.bottomLeft,
       child: TextButton(
-        child: const Text("Forgot Password?",
+        child: const Text(
+          "Forgot Password?",
           style: TextStyle(color: Colors.black, fontFamily: 'SFProDisplay'),
           textAlign: TextAlign.left,
         ),
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ResetPasswordScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const ResetPasswordScreen()));
         },
       ),
     );

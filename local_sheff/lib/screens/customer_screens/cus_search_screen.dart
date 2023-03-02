@@ -3,14 +3,14 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:local_sheff/reusable_widgets/reusable_widget.dart';
 
-class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+class CusSearchScreen extends StatefulWidget {
+  const CusSearchScreen({super.key});
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  State<CusSearchScreen> createState() => _CusSearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _CusSearchScreenState extends State<CusSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
