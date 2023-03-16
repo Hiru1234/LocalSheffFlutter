@@ -10,6 +10,7 @@ import 'package:local_sheff/screens/delivery_person_screens/dp_browse_screen.dar
 import 'package:local_sheff/screens/homecook_screens/hc_home_screen.dart';
 import 'package:local_sheff/screens/resetPassword_screen.dart';
 import 'package:local_sheff/screens/signup_screen.dart';
+import 'package:local_sheff/screens/start_screen.dart';
 
 import '../reusable_widgets/reusable_widget.dart';
 
@@ -26,7 +27,7 @@ class _SignInScreenState extends State<SignInScreen> {
   //final databaseReference = FirebaseDatabase.instance.ref().child("Users");
 
   TextEditingController _passwordTextController = TextEditingController();
-  TextEditingController _userNameTextController = TextEditingController();
+  TextEditingController _emailTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +65,8 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(
                 height: 30,
               ),
-              reusableTextField("Enter Username", Icons.person_outline, false,
-                  _userNameTextController),
+              reusableTextField("Enter Email Id", Icons.person_outline, false,
+                  _emailTextController),
               const SizedBox(
                 height: 20,
               ),
@@ -81,16 +82,19 @@ class _SignInScreenState extends State<SignInScreen> {
               resuableButton(context, 'SIGN IN', () {
                 FirebaseAuth.instance
                     .signInWithEmailAndPassword(
-                        email: _userNameTextController.text,
+                        email: _emailTextController.text,
                         password: _passwordTextController.text)
                     .then((value) async {
                   final User? user = FirebaseAuth.instance.currentUser;
                   final userID = user?.uid;
-                  //print("User Id is $userID");
-                  DatabaseReference reference = FirebaseDatabase.instance.ref("Users/$userID/role");
-                  DatabaseEvent event = await reference.once();
-                  //print("Role of user is ${event.snapshot.value}");
-                  String currentUserType = event.snapshot.value.toString();
+                  DatabaseReference referenceForName =
+                      FirebaseDatabase.instance.ref("Users/$userID/userName");
+                  DatabaseEvent eventForName = await referenceForName.once();
+                  StartScreen.nameOfCurrentUser = eventForName.snapshot.value.toString();
+                  DatabaseReference referenceForRole =
+                      FirebaseDatabase.instance.ref("Users/$userID/role");
+                  DatabaseEvent eventForRole = await referenceForRole.once();
+                  String currentUserType = eventForRole.snapshot.value.toString();
                   switch (currentUserType) {
                     case "UserType.customer":
                       {
@@ -117,35 +121,6 @@ class _SignInScreenState extends State<SignInScreen> {
                       }
                       break;
                   }
-
-                  // FirebaseDatabase.instance
-                  //     .ref()
-                  //     .child("Users")
-                  //     .child(userID!)
-                  //     .once()
-                  //     .then((DataSnapshot dataSnapshot) {
-                  //       setState(() {
-                  //         if (dataSnapshot.child('role') ==
-                  //             UserType.customer.toString()) {
-                  //           Navigator.push(
-                  //               context,
-                  //               MaterialPageRoute(
-                  //                   builder: (context) => const CusHomeScreen()));
-                  //         } else if (dataSnapshot.child('role') ==
-                  //             UserType.homecook.toString()) {
-                  //           Navigator.push(
-                  //               context,
-                  //               MaterialPageRoute(
-                  //                   builder: (context) => const HCHomeScreen()));
-                  //         } else if (dataSnapshot.child('role') ==
-                  //             UserType.deliveryPerson.toString()) {
-                  //           Navigator.push(
-                  //               context,
-                  //               MaterialPageRoute(
-                  //                   builder: (context) => const DPHomePage()));
-                  //         }
-                  //       });
-                  //     } as FutureOr Function(DatabaseEvent value));
                 }).catchError((onError) {
                   showDialog(
                       context: context,
@@ -155,8 +130,8 @@ class _SignInScreenState extends State<SignInScreen> {
                               style: TextStyle(
                                   color: Colors.black,
                                   fontFamily: 'SFProDisplay')),
-                          content:  Text(onError.toString(),
-                              style: TextStyle(
+                          content: Text(onError.toString(),
+                              style: const TextStyle(
                                   color: Colors.black,
                                   fontFamily: 'SFProDisplay')),
                           actions: [
@@ -197,8 +172,10 @@ class _SignInScreenState extends State<SignInScreen> {
           textAlign: TextAlign.left,
         ),
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const ResetPasswordScreen()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const ResetPasswordScreen()));
         },
       ),
     );

@@ -81,6 +81,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         password: _passwordTextController.text)
                     .then((value) {
                   print("Created new account");
+                  StartScreen.nameOfCurrentUser = _userNameTextController.text;
                   final User? user = FirebaseAuth.instance.currentUser;
                   final userID = user?.uid;
                   databaseReference.child(userID!).set({

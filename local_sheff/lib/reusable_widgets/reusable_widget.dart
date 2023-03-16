@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
@@ -87,3 +89,42 @@ String textValidator(String email, String password) {
 }
 
 enum UserType { customer, homecook, deliveryPerson }
+
+AlertDialog confirmAction(
+    String message,
+    String confirmText,
+    Function confirmFunc,
+    String denyText,
+    Function denyFunc) {
+  return AlertDialog(
+    content: Text(message,
+        style:
+            const TextStyle(color: Colors.black, fontFamily: 'SFProDisplay')),
+    actions: [
+      ElevatedButton(
+          onPressed: () {
+            confirmFunc();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: standardGreyColor,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+          ),
+          child: Text(confirmText,
+              style: const TextStyle(
+                  color: Colors.white, fontFamily: 'SFProDisplay'))),
+      ElevatedButton(
+          onPressed: () {
+            denyFunc();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: standardGreyColor,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+          ),
+          child: Text(denyText,
+              style: const TextStyle(
+                  color: Colors.white, fontFamily: 'SFProDisplay')))
+    ],
+  );
+}
