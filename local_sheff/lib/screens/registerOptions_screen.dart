@@ -50,17 +50,17 @@ class _RegisterOptionsScreenState extends State<RegisterOptionsScreen> {
           const SizedBox(
             height: 30,
           ),
-          resuableButton(context, 'CUSTOMER', () {
+          reusableButton(context, 'CUSTOMER', () {
             StartScreen.typeOfCurrentUser = UserType.customer;
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => SignUpScreen()));
           }, MediaQuery.of(context).size.width * 0.7, 50),
-          resuableButton(context, 'HOMECOOK', () {
+          reusableButton(context, 'HOMECOOK', () {
             StartScreen.typeOfCurrentUser = UserType.homecook;
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => SignUpScreen()));
           }, MediaQuery.of(context).size.width * 0.7, 50),
-          resuableButton(context, 'DELIVERY PERSON', () {
+          reusableButton(context, 'DELIVERY PERSON', () {
             StartScreen.typeOfCurrentUser = UserType.deliveryPerson;
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => SignUpScreen()));

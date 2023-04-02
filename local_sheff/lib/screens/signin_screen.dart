@@ -79,7 +79,7 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(
                 height: 20,
               ),
-              resuableButton(context, 'SIGN IN', () {
+              reusableButton(context, 'SIGN IN', () {
                 FirebaseAuth.instance
                     .signInWithEmailAndPassword(
                         email: _emailTextController.text,

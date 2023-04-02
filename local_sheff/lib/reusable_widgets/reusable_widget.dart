@@ -44,7 +44,7 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
   );
 }
 
-Container resuableButton(BuildContext context, String buttonText,
+Container reusableButton(BuildContext context, String buttonText,
     Function onTap, double buttonWidth, double buttonHeight) {
   return Container(
     width: buttonWidth,

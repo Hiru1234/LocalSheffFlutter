@@ -74,7 +74,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(
                 height: 20,
               ),
-              resuableButton(context, 'REGISTER', () {
+              reusableButton(context, 'REGISTER', () {
                 FirebaseAuth.instance
                     .createUserWithEmailAndPassword(
                         email: _emailTextController.text,

@@ -211,7 +211,7 @@ class _CusAccountScreenState extends State<CusAccountScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    resuableButton(context, 'Discard Changes', () {
+                    reusableButton(context, 'Discard Changes', () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -220,7 +220,7 @@ class _CusAccountScreenState extends State<CusAccountScreen> {
                     const SizedBox(
                       width: 10,
                     ),
-                    resuableButton(context, 'Save Changes', () async {
+                    reusableButton(context, 'Save Changes', () async {
                       try {
                         final User? user = FirebaseAuth.instance.currentUser;
                         final userID = user?.uid;

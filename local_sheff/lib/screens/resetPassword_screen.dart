@@ -56,7 +56,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               const SizedBox(
                 height: 20,
               ),
-              resuableButton(context, 'RESET PASSWORD', () {
+              reusableButton(context, 'RESET PASSWORD', () {
                 FirebaseAuth.instance
                     .sendPasswordResetEmail(email: _emailTextController.text)
                     .then((value) => {
