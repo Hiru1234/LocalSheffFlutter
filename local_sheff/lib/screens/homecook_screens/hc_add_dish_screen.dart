@@ -25,9 +25,8 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
   final TextEditingController _ingredientTextController =
       TextEditingController();
   bool displayList = false;
-  String imageUrl = '';
-  ImagePicker imagePicker = ImagePicker();
-  XFile? file = XFile("");
+  File? selectedImage;
+  String? imageUrl = "";
 
   @override
   Widget build(BuildContext context) {
@@ -59,27 +58,37 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
               const SizedBox(
                 height: 40,
               ),
-              IconButton(
-                  onPressed: () async {
-                    /*
-                * Step 1. Pick/Capture an image   (image_picker)
-                * Step 2. Upload the image to Firebase storage
-                * Step 3. Get the URL of the uploaded image
-                * Step 4. Store the image URL inside the corresponding
-                *         document of the database.
-                * Step 5. Display the image on the list
-                *
-                * */
-
-                    /*Step 1:Pick image*/
-                    //Install image_picker
-                    //Import the corresponding library
-
-                    //ImagePicker imagePicker = ImagePicker();
-                    await pickImage();
-                  },
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-                  icon: const Icon(Icons.camera_alt)),
+              selectedImage == null
+                  ? const Text(
+                      "Please pick an image to upload",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: 'SFProDisplay',
+                        fontSize: 17,
+                      ),
+                    )
+                  : Image.file(selectedImage!),
+              TextButton.icon(
+                  onPressed: getImage,
+                  icon: const Icon(Icons.upload_file),
+                  label: selectedImage == null
+                      ? const Text(
+                          "Upload Image",
+                          style: TextStyle(
+                            fontFamily: 'SFProDisplay',
+                            fontSize: 17,
+                          ),
+                        )
+                      : const Text(
+                          "Change Image",
+                          style: TextStyle(
+                            fontFamily: 'SFProDisplay',
+                            fontSize: 17,
+                          ),
+                        )),
+              const SizedBox(
+                height: 20,
+              ),
               const SizedBox(
                 height: 40,
               ),
@@ -239,16 +248,54 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
                 height: 30,
               ),
               reusableButton(context, "Create Dish", () async {
-                if (imageUrl.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please upload an image')));
-
+                if (selectedImage == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text(
+                    'Please upload an image',
+                    style: TextStyle(
+                      fontFamily: 'SFProDisplay',
+                      fontSize: 17,
+                    ),
+                  )));
+                  return;
+                }
+                if (_dishNameTextController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text(
+                    'Please provide a dish Name',
+                    style: TextStyle(
+                      fontFamily: 'SFProDisplay',
+                      fontSize: 17,
+                    ),
+                  )));
+                  return;
+                }
+                if (_descriptionTextController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text(
+                    'Please provide a description for the dish',
+                    style: TextStyle(
+                      fontFamily: 'SFProDisplay',
+                      fontSize: 17,
+                    ),
+                  )));
+                  return;
+                }
+                if (ingredients.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text(
+                    'Please provide ingredients for the dish',
+                    style: TextStyle(
+                      fontFamily: 'SFProDisplay',
+                      fontSize: 17,
+                    ),
+                  )));
                   return;
                 }
 
                 //Import dart:core
                 String uniqueFileName =
-                DateTime.now().millisecondsSinceEpoch.toString();
+                    DateTime.now().millisecondsSinceEpoch.toString();
 
                 /*Step 2: Upload to Firebase storage*/
                 //Install firebase_storage
@@ -256,19 +303,19 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
 
                 //Get a reference to storage root
                 Reference referenceRoot = FirebaseStorage.instance.ref();
-                Reference referenceDirImages =
-                referenceRoot.child('dishes');
+                Reference referenceDirImages = referenceRoot.child('dishes');
 
                 //Create a reference for the image to be stored
                 Reference referenceImageToUpload =
-                referenceDirImages.child(uniqueFileName);
+                    referenceDirImages.child(uniqueFileName);
 
                 //Handle errors/success
                 try {
                   //Store the file
-                  await referenceImageToUpload.putFile(File(file!.path));
+                  await referenceImageToUpload
+                      .putFile(File(selectedImage!.path));
                   //Success: get the download URL
-                  imageUrl = await referenceImageToUpload.getDownloadURL();
+                  //imageUrl = await referenceImageToUpload.getDownloadURL();
                 } catch (error) {
                   //Some error occurred
                   print(error.toString());
@@ -282,23 +329,27 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
 
                 FirebaseFirestore db = FirebaseFirestore.instance;
 
-                String uniqueId =
-                "DS${DateTime.now().millisecondsSinceEpoch}";
+                String uniqueId = "DS${DateTime.now().millisecondsSinceEpoch}";
 
                 //Create a Map of data
                 Map<String, dynamic> dataToSend = {
                   'dishName': dishName,
                   'description': description,
                   'ingredients': ingredients,
-                  'imageReference': imageUrl,
+                  'imageReference': uniqueFileName,
                   'homeCookReference': userID
                 };
 
-                db.collection("dishes")
+                db
+                    .collection("dishes")
                     .doc(uniqueId)
                     .set(dataToSend)
-                    .onError((e, _) => print("Error writing document: $e"));
-
+                    .then((value) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => HCHomeScreen()));
+                }).catchError((err) {
+                  print(err);
+                });
                 //Add a new item
               }, MediaQuery.of(context).size.width, 50)
             ]),
@@ -308,18 +359,11 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
     );
   }
 
-  Future pickImage() async {
-    XFile? pickedFile =
-    await imagePicker.pickImage(source: ImageSource.gallery);
-    print('This file path ${file?.path}');
-
-    if (file == null) return;
-    //final pickedFile = await imagePicker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      file = pickedFile;
-      print('This file path ${pickedFile?.path}');
-    });
+  Future getImage() async {
+    final pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    selectedImage = File(pickedImage!.path);
+    setState(() {});
   }
 
   bool isListEmpty() {

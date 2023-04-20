@@ -51,6 +51,10 @@ class _CusHomeScreenState extends State<CusHomeScreen> {
             label: 'Cart',
           ),
           BottomNavigationBarItem(
+              icon: Icon(Icons.photo_camera_outlined),
+              label: 'Upload picture'
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.search),
             label: 'Search',
           ),
