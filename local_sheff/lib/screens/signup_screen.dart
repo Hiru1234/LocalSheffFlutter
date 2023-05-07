@@ -7,7 +7,7 @@ import 'package:local_sheff/screens/homecook_screens/hc_home_screen.dart';
 import 'package:local_sheff/screens/registerOptions_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:local_sheff/screens/start_screen.dart';
-
+import 'package:permission_handler/permission_handler.dart';
 import '../reusable_widgets/reusable_widget.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -75,83 +75,140 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(
                 height: 20,
               ),
-              reusableButton(context, 'REGISTER', () {
-                FirebaseAuth.instance
-                    .createUserWithEmailAndPassword(
-                        email: _emailTextController.text,
-                        password: _passwordTextController.text)
-                    .then((value) {
-                  print("Created new account");
-                  StartScreen.nameOfCurrentUser = _userNameTextController.text;
-                  final User? user = FirebaseAuth.instance.currentUser;
-                  final userID = user?.uid;
-                  databaseReference.child(userID!).set({
-                    'userName': _userNameTextController.text,
-                    'userEmail': _emailTextController.text,
-                    'role': StartScreen.typeOfCurrentUser.toString(),
-                    'image': "",
-                    'postcode':"",
-                  });
+              reusableButton(context, 'REGISTER', () async {
+                // Request location permission
+                final PermissionStatus status =
+                    await Permission.location.request();
+                if (status == PermissionStatus.granted) {
+                  // Location permission granted, continue with registration
+                  FirebaseAuth.instance
+                      .createUserWithEmailAndPassword(
+                          email: _emailTextController.text,
+                          password: _passwordTextController.text)
+                      .then((value) {
+                    print("Created new account");
+                    StartScreen.nameOfCurrentUser =
+                        _userNameTextController.text;
+                    final User? user = FirebaseAuth.instance.currentUser;
+                    final userID = user?.uid;
+                    databaseReference.child(userID!).set({
+                      'userName': _userNameTextController.text,
+                      'userEmail': _emailTextController.text,
+                      'role': StartScreen.typeOfCurrentUser.toString(),
+                      'image': "",
+                      'postcode': "",
+                    });
 
-                  switch (StartScreen.typeOfCurrentUser) {
-                    case UserType.customer:
-                      {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CusHomeScreen()));
-                      }
-                      break;
-                    case UserType.homecook:
-                      {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => HCHomeScreen()));
-                      }
-                      break;
-                    case UserType.deliveryPerson:
-                      {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DpHomeScreen()));
-                      }
-                      break;
-                  }
-                }).catchError((err) {
+                    switch (StartScreen.typeOfCurrentUser) {
+                      case UserType.customer:
+                        {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => CusHomeScreen()));
+                        }
+                        break;
+                      case UserType.homecook:
+                        {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HCHomeScreen()));
+                        }
+                        break;
+                      case UserType.deliveryPerson:
+                        {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DpHomeScreen()));
+                        }
+                        break;
+                    }
+                  }).catchError((err) {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text("Error",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontFamily: 'SFProDisplay')),
+                            content: Text(
+                                err.toString(),
+                                style: const TextStyle(
+                                    color: Colors.black,
+                                    fontFamily: 'SFProDisplay')),
+                            actions: [
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: standardGreyColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5)),
+                                  ),
+                                  child: const Text("Ok",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontFamily: 'SFProDisplay')))
+                            ],
+                          );
+                        });
+                  });
+                } else {
+                  // Location permission denied
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: const Text("Error",
+                          title: const Text(
+                              "Location Permission Denied",
                               style: TextStyle(
                                   color: Colors.black,
-                                  fontFamily: 'SFProDisplay')),
-                          content: Text(
-                              textValidator(_emailTextController.text,
-                                  _passwordTextController.text),
-                              style: const TextStyle(
+                                  fontFamily: 'SFProDisplay')
+                          ),
+                          content: const Text(
+                              "Please enable location permissions to use this app.",
+                              style: TextStyle(
                                   color: Colors.black,
-                                  fontFamily: 'SFProDisplay')),
+                                  fontFamily: 'SFProDisplay')
+                          ),
                           actions: [
                             ElevatedButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
+                                  openAppSettings();
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: standardGreyColor,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5)),
                                 ),
-                                child: const Text("Ok",
+                                child: const Text("Open Settings",
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontFamily: 'SFProDisplay')))
+                                        fontFamily: 'SFProDisplay'))
+                            ),
+                            ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5)),
+                                ),
+                                child: const Text("Cancel",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'SFProDisplay'))
+                            )
                           ],
                         );
                       });
-                });
+                }
               }, MediaQuery.of(context).size.width, 50),
             ]),
           ),

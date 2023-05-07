@@ -7,6 +7,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:local_sheff/reusable_widgets/reusable_widget.dart';
 import 'package:local_sheff/screens/delivery_person_screens/dp_delivery_screen.dart';
 import 'package:local_sheff/screens/start_screen.dart';
+import 'dart:convert';
 
 import '../../classes/dishOrder.dart';
 import '../../classes/user.dart';
@@ -34,27 +35,49 @@ class _DpBrowseScreenState extends State<DpBrowseScreen> {
 
   void navigateToDeliveryScreen(BuildContext context, DishOrder order) async {
     //Gives error
-    // DatabaseReference referenceForHC = FirebaseDatabase.instance
-    //     .ref("Users/${order.homeCookId}/userName");
-    // DatabaseEvent eventForHC = await referenceForHC.once();
-    // AppUser homeCook = AppUser.fromSnapshot(eventForHC.snapshot);
-    //
+
+    DatabaseReference referenceForHC = FirebaseDatabase.instance.ref("Users/${order.homeCookId}");
+    DatabaseEvent eventForHC = await referenceForHC.once();
+    Map<dynamic, dynamic>? userMap = eventForHC.snapshot.value as Map<dynamic, dynamic>?;
+
+    Map<String, dynamic> convertedMap = {};
+    userMap?.forEach((key, value) {
+      if (key is String) {
+        convertedMap[key] = value;
+      }
+    });
+
+    AppUser homeCook = AppUser.fromJson(json.decode(json.encode(convertedMap)));
+
+
     // DatabaseReference referenceForCus = FirebaseDatabase.instance
-    //     .ref("Users/${order.customerId}/userName");
+    //     .ref("Users/${order.customerId}");
     // DatabaseEvent eventForCus = await referenceForCus.once();
     // AppUser customer = AppUser.fromSnapshot(eventForCus.snapshot);
-    //
-    // CollectionReference collection =
-    // FirebaseFirestore.instance.collection('dishes');
-    // DocumentSnapshot snapshot =
-    // await collection.doc(order.dishId).get();
-    // String dishName = snapshot.get('dishName');
-    //
-    // Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //         builder: (context) => DpDeliveryScreen(
-    //           dishName: dishName, homeCook: homeCook, customer: customer, dishOrder: order,)));
+    DatabaseReference referenceForCus = FirebaseDatabase.instance.ref("Users/${order.homeCookId}");
+    DatabaseEvent eventForCus = await referenceForCus.once();
+    Map<dynamic, dynamic>? userMapCus = eventForCus.snapshot.value as Map<dynamic, dynamic>?;
+
+    Map<String, dynamic> convertedMapCus = {};
+    userMapCus?.forEach((key, value) {
+      if (key is String) {
+        convertedMapCus[key] = value;
+      }
+    });
+
+    AppUser customer = AppUser.fromJson(json.decode(json.encode(convertedMapCus)));
+
+    CollectionReference collection =
+    FirebaseFirestore.instance.collection('dishes');
+    DocumentSnapshot snapshot =
+    await collection.doc(order.dishId).get();
+    String dishName = snapshot.get('dishName');
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DpDeliveryScreen(
+              dishName: dishName, homeCook: homeCook, customer: customer, dishOrder: order,)));
   }
 
   String returnOrderState(String orderState) {

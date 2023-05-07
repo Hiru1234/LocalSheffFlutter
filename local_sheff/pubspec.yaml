@@ -45,6 +45,7 @@ dependencies:
   http: ^0.13.5
   chips_choice: ^3.0.0
   flutter_rating_bar: ^4.0.1
+  permission_handler: ^8.2.5
 
 
 dev_dependencies:
