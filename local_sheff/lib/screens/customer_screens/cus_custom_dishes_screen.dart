@@ -1,86 +1,54 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:local_sheff/reusable_widgets/reusable_widget.dart';
-import 'package:local_sheff/screens/delivery_person_screens/dp_delivery_screen.dart';
-import 'package:local_sheff/screens/start_screen.dart';
+import 'package:local_sheff/screens/customer_screens/cus_custom_dish_screen.dart';
 
-import '../../classes/dishOrder.dart';
-import '../../classes/user.dart';
+import '../../classes/customDish.dart';
 
-class DpBrowseScreen extends StatefulWidget {
-  const DpBrowseScreen({super.key});
+class CusCustomDishesScreen extends StatefulWidget {
+  const CusCustomDishesScreen({Key? key}) : super(key: key);
 
   @override
-  State<DpBrowseScreen> createState() => _DpBrowseScreenState();
+  State<CusCustomDishesScreen> createState() => _CusCustomDishesScreenState();
 }
 
-class _DpBrowseScreenState extends State<DpBrowseScreen> {
-  Stream<List<DishOrder>> getOrders() {
+class _CusCustomDishesScreenState extends State<CusCustomDishesScreen> {
+
+  Stream<List<CustomDish>> getOrders() {
+    final User? user = FirebaseAuth.instance.currentUser;
+    final userID = user?.uid;
     var data = FirebaseFirestore.instance
-        .collection("orders")
-        .where("orderState", isEqualTo: OrderState.prepared.toString())
-        .where("orderType", isEqualTo: OrderType.delivery.toString())
+        .collection("customDishes")
+        .where("customerId", isEqualTo: userID)
         .snapshots()
         .map((snapshot) => snapshot.docs
-        .map((doc) => DishOrder.fromJson(doc.data()))
+        .map((doc) => CustomDish.fromJson(doc.data()))
         .toList());
     print("This is the stream : ${data.toList().toString()}");
     return data;
   }
 
-  void navigateToDeliveryScreen(BuildContext context, DishOrder order) async {
-    //Gives error
-    // DatabaseReference referenceForHC = FirebaseDatabase.instance
-    //     .ref("Users/${order.homeCookId}/userName");
-    // DatabaseEvent eventForHC = await referenceForHC.once();
-    // AppUser homeCook = AppUser.fromSnapshot(eventForHC.snapshot);
-    //
-    // DatabaseReference referenceForCus = FirebaseDatabase.instance
-    //     .ref("Users/${order.customerId}/userName");
-    // DatabaseEvent eventForCus = await referenceForCus.once();
-    // AppUser customer = AppUser.fromSnapshot(eventForCus.snapshot);
-    //
-    // CollectionReference collection =
-    // FirebaseFirestore.instance.collection('dishes');
-    // DocumentSnapshot snapshot =
-    // await collection.doc(order.dishId).get();
-    // String dishName = snapshot.get('dishName');
-    //
-    // Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //         builder: (context) => DpDeliveryScreen(
-    //           dishName: dishName, homeCook: homeCook, customer: customer, dishOrder: order,)));
-  }
-
   String returnOrderState(String orderState) {
     String state = "";
     switch (orderState) {
-      case "OrderState.placed":
+      case "CustomDishState.created":
         {
-          state = "Placed";
+          state = "Created";
         }
         break;
-      case "OrderState.accepted":
+      case "CustomDishState.accepted":
         {
           state = "Accepted";
         }
         break;
-      case "OrderState.prepared":
+      case "CustomDishState.prepared":
         {
           state = "Prepared";
         }
         break;
-      case "OrderState.collectedByDriver":
-        {
-          state = "Collected";
-        }
-        break;
-      case "OrderState.completed":
+      case "CustomDishState.completed":
         {
           state = "Completed";
         }
@@ -89,7 +57,7 @@ class _DpBrowseScreenState extends State<DpBrowseScreen> {
     return state;
   }
 
-  Widget buildDishes(DishOrder order) {
+  Widget buildDishes(CustomDish customDish) {
     return Container(
         padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
         decoration: const BoxDecoration(
@@ -98,25 +66,27 @@ class _DpBrowseScreenState extends State<DpBrowseScreen> {
           ),
         ),
         child: ListTile(
-          leading: Icon(Icons.delivery_dining, color: standardGreenColor,),
-          title: const Text(
-            "Delivery",
-            style: TextStyle(
+          leading: const Icon(Icons.fastfood, color: standardGreenColor,),
+          title: Text(
+            customDish.dishName!,
+            style: const TextStyle(
                 color: Colors.black,
                 fontFamily: 'SFProDisplay',
                 fontSize: 18,
                 fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
-              "${order.quantity} items • £${order.totalPrice}\n"
-                  "${order.orderDate} • ${returnOrderState(order.orderState!)}",
+                  "${customDish.date} • ${returnOrderState(customDish.dishState!)}",
               style: const TextStyle(
                   color: Colors.black,
                   fontFamily: 'SFProDisplay',
                   fontSize: 16)),
-          trailing: const Icon(Icons.arrow_forward_ios),
+          trailing: const Icon(Icons.receipt),
           onTap: ()  {
-            navigateToDeliveryScreen(context, order);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => CusCustomDishScreen(customDish: customDish)));
           },
         ));
   }
@@ -137,7 +107,7 @@ class _DpBrowseScreenState extends State<DpBrowseScreen> {
               child: Container(
                 color: Colors.white,
                 child: const Text(
-                  "Deliveries",
+                  "My Custom Dishes",
                   style: TextStyle(
                       fontSize: 25,
                       fontFamily: 'SFProDisplay',
@@ -151,7 +121,7 @@ class _DpBrowseScreenState extends State<DpBrowseScreen> {
               height: 20,
             ),
             Expanded(
-                child: StreamBuilder<List<DishOrder>>(
+                child: StreamBuilder<List<CustomDish>>(
                   stream: getOrders(),
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {

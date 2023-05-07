@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:local_sheff/screens/homecook_screens/hc_account_screen.dart';
 import 'package:local_sheff/screens/homecook_screens/hc_add_dish_screen.dart';
 import 'package:local_sheff/screens/homecook_screens/hc_dishes_screen.dart';
+import 'package:local_sheff/screens/homecook_screens/hc_due_orders_screen.dart';
 import 'package:local_sheff/screens/start_screen.dart';
 
 import '../../reusable_widgets/reusable_widget.dart';
@@ -28,6 +29,7 @@ class _HCHomeScreenState extends State<HCHomeScreen> {
   final List<Widget> _pages = [
     HcDishesScreen(),
     HcAddDishScreen(),
+    HcDueOrdersScreen(),
     HcAccountScreen()
   ];
 
@@ -48,6 +50,10 @@ class _HCHomeScreenState extends State<HCHomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.add_circle),
             label: 'Add Dish',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.food_bank_outlined),
+            label: 'Orders',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

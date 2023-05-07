@@ -43,6 +43,8 @@ dependencies:
   firebase_storage: ^11.0.16
   cloud_firestore: ^4.4.5
   http: ^0.13.5
+  chips_choice: ^3.0.0
+  flutter_rating_bar: ^4.0.1
 
 
 dev_dependencies:

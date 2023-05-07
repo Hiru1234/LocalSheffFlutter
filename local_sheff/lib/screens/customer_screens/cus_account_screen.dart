@@ -18,6 +18,7 @@ class CusAccountScreen extends StatefulWidget {
 class _CusAccountScreenState extends State<CusAccountScreen> {
   TextEditingController _userNameTextController =
       TextEditingController(text: StartScreen.nameOfCurrentUser);
+  TextEditingController _postcodeTextController = TextEditingController(text: StartScreen.postcode);
   bool isButtonEnabled = false;
 
   @override
@@ -81,6 +82,60 @@ class _CusAccountScreenState extends State<CusAccountScreen> {
                           fontSize: 18),
                       decoration: InputDecoration(
                           labelText: StartScreen.nameOfCurrentUser,
+                          labelStyle: const TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'SFProDisplay',
+                            fontSize: 18,
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none),
+                      keyboardType: TextInputType.name,
+                      onChanged: (val) {
+                        isEmpty();
+                      },
+                    )),
+              ),
+              const Divider(
+                height: 20,
+                thickness: 1,
+                color: Colors.black,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  color: Colors.white,
+                  child: const Text(
+                    "Postcode",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'SFProDisplay',
+                        color: Colors.black54),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    color: Colors.white,
+                    child: TextField(
+                      controller: _postcodeTextController,
+                      obscureText: false,
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      cursorColor: Colors.black,
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'SFProDisplay',
+                          fontSize: 18),
+                      decoration: InputDecoration(
+                          labelText: StartScreen.postcode,
                           labelStyle: const TextStyle(
                             color: Colors.black,
                             fontFamily: 'SFProDisplay',
@@ -280,7 +335,7 @@ class _CusAccountScreenState extends State<CusAccountScreen> {
 
   bool isEmpty() {
     setState(() {
-      if (_userNameTextController.text != StartScreen.nameOfCurrentUser) {
+      if (_userNameTextController.text != StartScreen.nameOfCurrentUser || _postcodeTextController.text != StartScreen.postcode) {
         isButtonEnabled = true;
       }
     });

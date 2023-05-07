@@ -90,6 +90,12 @@ String textValidator(String email, String password) {
 
 enum UserType { customer, homecook, deliveryPerson }
 
+enum OrderType {collection, delivery}
+
+enum CustomDishState{created, accepted, prepared, completed}
+
+enum OrderState { placed, accepted, prepared, collectedByDriver, completed }
+
 AlertDialog confirmAction(
     String message,
     String confirmText,

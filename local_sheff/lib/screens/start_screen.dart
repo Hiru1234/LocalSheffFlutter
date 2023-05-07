@@ -9,6 +9,8 @@ import 'package:local_sheff/screens/signup_screen.dart';
 class StartScreen extends StatefulWidget {
   static UserType typeOfCurrentUser = UserType.customer;
   static String nameOfCurrentUser = '';
+  static String profilePicUrl = '';
+  static String postcode = '';
 
   const StartScreen({super.key});
 

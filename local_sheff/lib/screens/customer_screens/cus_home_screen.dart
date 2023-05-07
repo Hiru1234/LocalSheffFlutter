@@ -5,9 +5,11 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:local_sheff/reusable_widgets/reusable_widget.dart';
 import 'package:local_sheff/screens/customer_screens/cus_account_screen.dart';
 import 'package:local_sheff/screens/customer_screens/cus_browse_screen.dart';
-import 'package:local_sheff/screens/customer_screens/cus_cart_screen.dart';
-import 'package:local_sheff/screens/customer_screens/cus_search_screen.dart';
+import 'package:local_sheff/screens/customer_screens/cus_custom_dishes_screen.dart';
+import 'package:local_sheff/screens/customer_screens/cus_orders_screen.dart';
 import 'package:local_sheff/screens/start_screen.dart';
+
+import 'cus_create_custom_dish_screen.dart';
 
 class CusHomeScreen extends StatefulWidget {
   const CusHomeScreen({super.key});
@@ -27,8 +29,9 @@ class _CusHomeScreenState extends State<CusHomeScreen> {
 
   final List<Widget> _pages = [
     CusBrowseScreen(),
-    CusCartScreen(),
-    CusSearchScreen(),
+    CusOrdersScreen(),
+    CusCreateCustomDishScreen(),
+    CusCustomDishesScreen(),
     CusAccountScreen()
   ];
 
@@ -47,16 +50,16 @@ class _CusHomeScreenState extends State<CusHomeScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Cart',
+            icon: Icon(Icons.shopping_basket),
+            label: 'Orders',
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.photo_camera_outlined),
-              label: 'Upload picture'
+              icon: Icon(Icons.add_box_outlined),
+              label: 'Custom Dish'
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
+              icon: Icon(Icons.list_alt),
+              label: 'My Dishes'
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

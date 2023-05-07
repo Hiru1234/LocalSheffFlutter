@@ -19,6 +19,7 @@ class HcAddDishScreen extends StatefulWidget {
 
 class _HcAddDishScreenState extends State<HcAddDishScreen> {
   final List<String> ingredients = <String>[];
+  final TextEditingController _priceTextController = TextEditingController();
   final TextEditingController _dishNameTextController = TextEditingController();
   final TextEditingController _descriptionTextController =
       TextEditingController();
@@ -90,7 +91,7 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
                 height: 20,
               ),
               const SizedBox(
-                height: 40,
+                height: 30,
               ),
               Align(
                 alignment: Alignment.centerLeft,
@@ -127,7 +128,44 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
                     )),
               ),
               const SizedBox(
-                height: 40,
+                height: 30,
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    color: Colors.white,
+                    child: TextField(
+                      controller: _priceTextController,
+                      obscureText: false,
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      cursorColor: Colors.black,
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'SFProDisplay',
+                          fontSize: 18),
+                      decoration: InputDecoration(
+                        labelText: "Price",
+                        labelStyle: const TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'SFProDisplay',
+                          fontSize: 22,
+                        ),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                                width: 2, style: BorderStyle.solid)),
+                      ),
+                      keyboardType: TextInputType.name,
+                      onChanged: (val) {
+                        isListEmpty();
+                      },
+                    )),
+              ),
+              const SizedBox(
+                height: 30,
               ),
               Align(
                 alignment: Alignment.centerLeft,
@@ -270,6 +308,17 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
                   )));
                   return;
                 }
+                if (_priceTextController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text(
+                        'Please provide a price for the dish',
+                        style: TextStyle(
+                          fontFamily: 'SFProDisplay',
+                          fontSize: 17,
+                        ),
+                      )));
+                  return;
+                }
                 if (_descriptionTextController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text(
@@ -293,13 +342,8 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
                   return;
                 }
 
-                //Import dart:core
                 String uniqueFileName =
                     DateTime.now().millisecondsSinceEpoch.toString();
-
-                /*Step 2: Upload to Firebase storage*/
-                //Install firebase_storage
-                //Import the library
 
                 //Get a reference to storage root
                 Reference referenceRoot = FirebaseStorage.instance.ref();
@@ -321,9 +365,6 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
                   print(error.toString());
                 }
 
-                String dishName = _dishNameTextController.text;
-                String description = _descriptionTextController.text;
-
                 final User? user = FirebaseAuth.instance.currentUser;
                 final userID = user?.uid;
 
@@ -333,8 +374,9 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
 
                 //Create a Map of data
                 Map<String, dynamic> dataToSend = {
-                  'dishName': dishName,
-                  'description': description,
+                  'dishName': _dishNameTextController.text,
+                  'price': _priceTextController.text,
+                  'description': _descriptionTextController.text,
                   'ingredients': ingredients,
                   'imageReference': uniqueFileName,
                   'homeCookReference': userID

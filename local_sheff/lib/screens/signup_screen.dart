@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:local_sheff/screens/customer_screens/cus_home_screen.dart';
 import 'package:local_sheff/screens/delivery_person_screens/dp_browse_screen.dart';
+import 'package:local_sheff/screens/delivery_person_screens/dp_home_screen.dart';
 import 'package:local_sheff/screens/homecook_screens/hc_home_screen.dart';
 import 'package:local_sheff/screens/registerOptions_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -87,7 +88,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   databaseReference.child(userID!).set({
                     'userName': _userNameTextController.text,
                     'userEmail': _emailTextController.text,
-                    'role': StartScreen.typeOfCurrentUser.toString()
+                    'role': StartScreen.typeOfCurrentUser.toString(),
+                    'image': "",
+                    'postcode':"",
                   });
 
                   switch (StartScreen.typeOfCurrentUser) {
@@ -112,7 +115,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => DPHomePage()));
+                                builder: (context) => DpHomeScreen()));
                       }
                       break;
                   }

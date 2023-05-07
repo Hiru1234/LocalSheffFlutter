@@ -1,7 +1,13 @@
+import 'dart:io';
+import 'dart:core';
+import 'dart:typed_data';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:local_sheff/screens/homecook_screens/hc_home_screen.dart';
 
 import '../../reusable_widgets/reusable_widget.dart';
@@ -16,8 +22,40 @@ class HcAccountScreen extends StatefulWidget {
 
 class _HcAccountScreenState extends State<HcAccountScreen> {
   TextEditingController _userNameTextController =
-  TextEditingController(text: StartScreen.nameOfCurrentUser);
+      TextEditingController(text: StartScreen.nameOfCurrentUser);
+  TextEditingController _postcodeTextController = TextEditingController(text: StartScreen.postcode);
   bool isButtonEnabled = false;
+  bool hasNameBeenUpdated = false;
+  bool hasImageBeenUpdated = false;
+  File? selectedImage;
+
+  Future<Uint8List?> loadImage(String url) async {
+    print("url is ${StartScreen.profilePicUrl}");
+    final Reference ref =
+        FirebaseStorage.instance.ref().child("users").child(url);
+    const int maxSize = 10 * 1024 * 1024;
+    final Uint8List? imageData = await ref.getData(maxSize);
+    return imageData;
+  }
+
+  Widget returnImage(BuildContext context) {
+    return FutureBuilder<Uint8List?>(
+      future: loadImage(StartScreen.profilePicUrl),
+      builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.hasData) {
+          return ClipOval(
+            child: Image.memory(
+              snapshot.data!,
+              fit: BoxFit.cover,
+            ),
+          );
+        } else {
+          return CircularProgressIndicator();
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +84,45 @@ class _HcAccountScreenState extends State<HcAccountScreen> {
                   ),
                 ),
               ),
+              const SizedBox(
+                height: 30,
+              ),
+              if (selectedImage == null && StartScreen.profilePicUrl.isNotEmpty)
+                InkWell(
+                  onTap: () {
+                    getImage();
+                  },
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.white,
+                    child: returnImage(context),
+                  ),
+                )
+              else
+                (selectedImage == null)
+                    ? InkWell(
+                        onTap: () {
+                          getImage();
+                        },
+                        child: const CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.grey,
+                          child: Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.black,
+                          ),
+                        ),
+                      )
+                    : InkWell(
+                        onTap: () {
+                          getImage();
+                        },
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundImage: Image.file(selectedImage!).image,
+                        ),
+                      ),
               const SizedBox(
                 height: 30,
               ),
@@ -100,6 +177,60 @@ class _HcAccountScreenState extends State<HcAccountScreen> {
                 thickness: 1,
                 color: Colors.black,
               ),
+              const SizedBox(
+                height: 10,
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  color: Colors.white,
+                  child: const Text(
+                    "Postcode",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'SFProDisplay',
+                        color: Colors.black54),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    color: Colors.white,
+                    child: TextField(
+                      controller: _postcodeTextController,
+                      obscureText: false,
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      cursorColor: Colors.black,
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'SFProDisplay',
+                          fontSize: 18),
+                      decoration: InputDecoration(
+                          labelText: StartScreen.postcode,
+                          labelStyle: const TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'SFProDisplay',
+                            fontSize: 18,
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none),
+                      keyboardType: TextInputType.name,
+                      onChanged: (val) {
+                        isEmpty();
+                      },
+                    )),
+              ),
+              const Divider(
+                height: 20,
+                thickness: 1,
+                color: Colors.black,
+              ),
               ListView.builder(
                 padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
                 itemCount: 1,
@@ -115,7 +246,7 @@ class _HcAccountScreenState extends State<HcAccountScreen> {
                                 return confirmAction(
                                     "Are you sure you want to sign out?",
                                     "Yes",
-                                        () {
+                                    () {
                                       FirebaseAuth.instance
                                           .signOut()
                                           .then((value) {
@@ -128,7 +259,7 @@ class _HcAccountScreenState extends State<HcAccountScreen> {
                                       });
                                     },
                                     "No",
-                                        () {
+                                    () {
                                       Navigator.of(context).pop();
                                     });
                               });
@@ -158,29 +289,35 @@ class _HcAccountScreenState extends State<HcAccountScreen> {
                                 return confirmAction(
                                     "Are you sure you want to delete your account? All of your data will be lost",
                                     "Yes",
-                                        () {
-                                      User? user = FirebaseAuth.instance.currentUser;
+                                    () {
+                                      User? user =
+                                          FirebaseAuth.instance.currentUser;
                                       String? userID = user?.uid;
                                       print(userID);
                                       user?.delete().then((value) {
-                                        DatabaseReference reference = FirebaseDatabase.instance.ref();
+                                        DatabaseReference reference =
+                                            FirebaseDatabase.instance.ref();
                                         print(userID);
-                                        reference.child("Users").child(userID!).remove().then((value) {
+                                        reference
+                                            .child("Users")
+                                            .child(userID!)
+                                            .remove()
+                                            .then((value) {
                                           print("Deleted Account");
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       StartScreen()));
-                                        }).catchError((err){
+                                        }).catchError((err) {
                                           print(err.toString());
                                         });
-                                      }).catchError((onError){
+                                      }).catchError((onError) {
                                         print(onError.toString());
                                       });
                                     },
                                     "No",
-                                        () {
+                                    () {
                                       Navigator.of(context).pop();
                                     });
                               });
@@ -223,12 +360,36 @@ class _HcAccountScreenState extends State<HcAccountScreen> {
                       try {
                         final User? user = FirebaseAuth.instance.currentUser;
                         final userID = user?.uid;
-                        DatabaseReference reference =
-                        FirebaseDatabase.instance.ref("Users/$userID");
-                        await reference
-                            .update({"userName": _userNameTextController.text});
-                        StartScreen.nameOfCurrentUser =
-                            _userNameTextController.text;
+
+                        if (hasNameBeenUpdated) {
+                          DatabaseReference reference =
+                              FirebaseDatabase.instance.ref("Users/$userID");
+                          await reference.update(
+                              {"userName": _userNameTextController.text});
+                          StartScreen.nameOfCurrentUser =
+                              _userNameTextController.text;
+                        }
+
+                        if (hasImageBeenUpdated) {
+                          String uniqueFileName =
+                              DateTime.now().millisecondsSinceEpoch.toString();
+
+                          //Get a reference to storage root
+                          Reference referenceRoot =
+                              FirebaseStorage.instance.ref();
+                          Reference referenceDirImages =
+                              referenceRoot.child('users');
+
+                          //Create a reference for the image to be stored
+                          Reference referenceImageToUpload =
+                              referenceDirImages.child(uniqueFileName);
+                          await referenceImageToUpload
+                              .putFile(File(selectedImage!.path));
+                          DatabaseReference reference =
+                              FirebaseDatabase.instance.ref("Users/$userID");
+                          await reference.update({"image": uniqueFileName});
+                          StartScreen.profilePicUrl = uniqueFileName;
+                        }
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -257,7 +418,7 @@ class _HcAccountScreenState extends State<HcAccountScreen> {
                                         backgroundColor: standardGreyColor,
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
-                                            BorderRadius.circular(5)),
+                                                BorderRadius.circular(5)),
                                       ),
                                       child: const Text("Ok",
                                           style: TextStyle(
@@ -276,9 +437,20 @@ class _HcAccountScreenState extends State<HcAccountScreen> {
       ),
     );
   }
+
+  Future getImage() async {
+    final pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    selectedImage = File(pickedImage!.path);
+    hasImageBeenUpdated = true;
+    isButtonEnabled = true;
+    setState(() {});
+  }
+
   bool isEmpty() {
     setState(() {
-      if (_userNameTextController.text != StartScreen.nameOfCurrentUser) {
+      if (_userNameTextController.text != StartScreen.nameOfCurrentUser || _postcodeTextController.text != StartScreen.postcode) {
+        hasNameBeenUpdated = true;
         isButtonEnabled = true;
       }
     });

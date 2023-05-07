@@ -1,29 +1,29 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:local_sheff/reusable_widgets/reusable_widget.dart';
-import 'package:local_sheff/screens/delivery_person_screens/dp_delivery_screen.dart';
-import 'package:local_sheff/screens/start_screen.dart';
+import 'package:local_sheff/screens/homecook_screens/hc_due_order_screen.dart';
 
 import '../../classes/dishOrder.dart';
-import '../../classes/user.dart';
 
-class DpBrowseScreen extends StatefulWidget {
-  const DpBrowseScreen({super.key});
+class HcDueOrdersScreen extends StatefulWidget {
+  const HcDueOrdersScreen({Key? key}) : super(key: key);
 
   @override
-  State<DpBrowseScreen> createState() => _DpBrowseScreenState();
+  State<HcDueOrdersScreen> createState() => _HcDueOrdersScreenState();
 }
 
-class _DpBrowseScreenState extends State<DpBrowseScreen> {
+class _HcDueOrdersScreenState extends State<HcDueOrdersScreen> {
   Stream<List<DishOrder>> getOrders() {
+    final User? user = FirebaseAuth.instance.currentUser;
+    final userID = user?.uid;
     var data = FirebaseFirestore.instance
         .collection("orders")
-        .where("orderState", isEqualTo: OrderState.prepared.toString())
-        .where("orderType", isEqualTo: OrderType.delivery.toString())
+        .where("homeCookId", isEqualTo: userID)
         .snapshots()
         .map((snapshot) => snapshot.docs
         .map((doc) => DishOrder.fromJson(doc.data()))
@@ -32,29 +32,16 @@ class _DpBrowseScreenState extends State<DpBrowseScreen> {
     return data;
   }
 
-  void navigateToDeliveryScreen(BuildContext context, DishOrder order) async {
-    //Gives error
-    // DatabaseReference referenceForHC = FirebaseDatabase.instance
-    //     .ref("Users/${order.homeCookId}/userName");
-    // DatabaseEvent eventForHC = await referenceForHC.once();
-    // AppUser homeCook = AppUser.fromSnapshot(eventForHC.snapshot);
-    //
-    // DatabaseReference referenceForCus = FirebaseDatabase.instance
-    //     .ref("Users/${order.customerId}/userName");
-    // DatabaseEvent eventForCus = await referenceForCus.once();
-    // AppUser customer = AppUser.fromSnapshot(eventForCus.snapshot);
-    //
-    // CollectionReference collection =
-    // FirebaseFirestore.instance.collection('dishes');
-    // DocumentSnapshot snapshot =
-    // await collection.doc(order.dishId).get();
-    // String dishName = snapshot.get('dishName');
-    //
-    // Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //         builder: (context) => DpDeliveryScreen(
-    //           dishName: dishName, homeCook: homeCook, customer: customer, dishOrder: order,)));
+  Future<Uint8List?> loadImage(String url) async {
+    CollectionReference collection =
+    FirebaseFirestore.instance.collection('dishes');
+    DocumentSnapshot snapshot = await collection.doc(url).get();
+    String fieldData = snapshot.get('imageReference');
+    final Reference ref =
+    FirebaseStorage.instance.ref().child("dishes").child(fieldData);
+    const int maxSize = 10 * 1024 * 1024;
+    final Uint8List? imageData = await ref.getData(maxSize);
+    return imageData;
   }
 
   String returnOrderState(String orderState) {
@@ -89,6 +76,41 @@ class _DpBrowseScreenState extends State<DpBrowseScreen> {
     return state;
   }
 
+  Widget returnImage(BuildContext context, String imageUrl) {
+    return FutureBuilder<Uint8List?>(
+      future: loadImage(imageUrl),
+      builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.hasData) {
+          return Image.memory(
+            snapshot.data!,
+            fit: BoxFit.cover,
+          );
+        } else {
+          return CircularProgressIndicator();
+        }
+      },
+    );
+  }
+  void navigateToHcOrderScreen(BuildContext context, DishOrder order) async {
+    DatabaseReference referenceForName = FirebaseDatabase.instance
+        .ref("Users/${order.homeCookId}/userName");
+    DatabaseEvent eventForName = await referenceForName.once();
+    String homeCookName = eventForName.snapshot.value.toString();
+
+    CollectionReference collection =
+    FirebaseFirestore.instance.collection('dishes');
+    DocumentSnapshot snapshot =
+    await collection.doc(order.dishId).get();
+    String dishName = snapshot.get('dishName');
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HcDueOrderScreen(
+              dishName: dishName, homeCookName: homeCookName, dishOrder: order,)));
+  }
+
   Widget buildDishes(DishOrder order) {
     return Container(
         padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
@@ -98,9 +120,13 @@ class _DpBrowseScreenState extends State<DpBrowseScreen> {
           ),
         ),
         child: ListTile(
-          leading: Icon(Icons.delivery_dining, color: standardGreenColor,),
+          leading: ClipOval(
+            child: SizedBox.fromSize(
+                size: Size.fromRadius(30), // Image radius
+                child: returnImage(context, order.dishId!)),
+          ),
           title: const Text(
-            "Delivery",
+            "Customer Order",
             style: TextStyle(
                 color: Colors.black,
                 fontFamily: 'SFProDisplay',
@@ -116,7 +142,7 @@ class _DpBrowseScreenState extends State<DpBrowseScreen> {
                   fontSize: 16)),
           trailing: const Icon(Icons.arrow_forward_ios),
           onTap: ()  {
-            navigateToDeliveryScreen(context, order);
+            navigateToHcOrderScreen(context, order);
           },
         ));
   }
@@ -137,7 +163,7 @@ class _DpBrowseScreenState extends State<DpBrowseScreen> {
               child: Container(
                 color: Colors.white,
                 child: const Text(
-                  "Deliveries",
+                  "Due Orders",
                   style: TextStyle(
                       fontSize: 25,
                       fontFamily: 'SFProDisplay',

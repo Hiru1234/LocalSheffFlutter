@@ -7,6 +7,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:local_sheff/screens/customer_screens/cus_home_screen.dart';
 import 'package:local_sheff/screens/delivery_person_screens/dp_browse_screen.dart';
+import 'package:local_sheff/screens/delivery_person_screens/dp_home_screen.dart';
 import 'package:local_sheff/screens/homecook_screens/hc_home_screen.dart';
 import 'package:local_sheff/screens/resetPassword_screen.dart';
 import 'package:local_sheff/screens/signup_screen.dart';
@@ -91,10 +92,22 @@ class _SignInScreenState extends State<SignInScreen> {
                       FirebaseDatabase.instance.ref("Users/$userID/userName");
                   DatabaseEvent eventForName = await referenceForName.once();
                   StartScreen.nameOfCurrentUser = eventForName.snapshot.value.toString();
+
                   DatabaseReference referenceForRole =
                       FirebaseDatabase.instance.ref("Users/$userID/role");
                   DatabaseEvent eventForRole = await referenceForRole.once();
                   String currentUserType = eventForRole.snapshot.value.toString();
+
+                  DatabaseReference referenceForImage =
+                  FirebaseDatabase.instance.ref("Users/$userID/image");
+                  DatabaseEvent eventForImage = await referenceForImage.once();
+                  StartScreen.profilePicUrl = eventForImage.snapshot.value.toString();
+
+                  DatabaseReference referenceForPC =
+                  FirebaseDatabase.instance.ref("Users/$userID/postcode");
+                  DatabaseEvent eventForPC = await referenceForPC.once();
+                  StartScreen.postcode = eventForPC.snapshot.value.toString();
+
                   switch (currentUserType) {
                     case "UserType.customer":
                       {
@@ -117,7 +130,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => DPHomePage()));
+                                builder: (context) => DpHomeScreen()));
                       }
                       break;
                   }
