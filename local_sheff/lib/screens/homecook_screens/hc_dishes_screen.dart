@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:local_sheff/classes/dish.dart';
+import 'package:local_sheff/classes/nutritionalInformation.dart';
 import 'package:local_sheff/screens/homecook_screens/hc_dish_screen.dart';
 
 class HcDishesScreen extends StatefulWidget {
@@ -74,11 +75,12 @@ class _HcDishesScreenState extends State<HcDishesScreen> {
           ),
           trailing: const Icon(Icons.more_vert_outlined),
           onTap: () {
+            NutritionalInformation nutritionalInformation = NutritionalInformation.fromJson(dish.nutritionalInformation!);
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => HcDishScreen(
-                      dish: dish)));
+                      dish: dish, nutritionalInfo: nutritionalInformation,)));
           },
         ));
   }

@@ -12,14 +12,16 @@ import 'package:local_sheff/reusable_widgets/reusable_widget.dart';
 import 'package:local_sheff/screens/customer_screens/cus_home_screen.dart';
 import 'package:local_sheff/screens/customer_screens/cus_rate_hc_screen.dart';
 
+import '../../classes/nutritionalInformation.dart';
 import '../../classes/user.dart';
 import '../homecook_screens/hc_home_screen.dart';
 
 class CusDishScreen extends StatefulWidget {
   final Dish dish;
   final AppUser appUser;
+  final NutritionalInformation nutritionalInfo;
 
-  const CusDishScreen({Key? key, required this.dish, required this.appUser}) : super(key: key);
+  const CusDishScreen({Key? key, required this.dish, required this.appUser, required this.nutritionalInfo}) : super(key: key);
 
   @override
   State<CusDishScreen> createState() => _CusDishScreenState();
@@ -144,6 +146,7 @@ class _CusDishScreenState extends State<CusDishScreen> {
   Widget build(BuildContext context) {
     final dish = widget.dish;
     final appUser = widget.appUser;
+    final nutritionalInfo = widget.nutritionalInfo;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -329,7 +332,24 @@ class _CusDishScreenState extends State<CusDishScreen> {
                       ),
                     )),
               const SizedBox(
-                height: 30,
+                height: 10,
+              ),
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+                    child: Text(
+                        "Nutritional data :\n\n"
+                            "   CHOCDF : ${nutritionalInfo.chocdf}\n"
+                            "   ENERC_KCAL : ${nutritionalInfo.enercKcal}\n"
+                            "   FAT : ${nutritionalInfo.fat}\n"
+                            "   FIBTG : ${nutritionalInfo.fibtg}\n"
+                            "   PROCNT : ${nutritionalInfo.procnt}\n",
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'SFProDisplay',
+                            fontSize: 17)),
+                  )
               ),
               TextFormField(
                 controller: TextEditingController(text: '$quantity'),

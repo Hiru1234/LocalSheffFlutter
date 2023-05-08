@@ -7,8 +7,9 @@ class Dish{
   String? imageReference;
   String? homeCookReference;
   String? price;
+  Map<String, dynamic>? nutritionalInformation;
 
-  Dish({required this.dishName, required this.description, required this.ingredients, required this.imageReference, required this.homeCookReference, required this.price});
+  Dish({required this.dishName, required this.description, required this.ingredients, required this.imageReference, required this.homeCookReference, required this.price,this.nutritionalInformation});
 
   static Dish fromJson(Map<String, dynamic> json) {
     return Dish(
@@ -17,7 +18,8 @@ class Dish{
         ingredients: json["ingredients"],
         imageReference: json["imageReference"],
         homeCookReference: json["homeCookReference"],
-        price: json["price"]
+        price: json["price"],
+        nutritionalInformation: json["nutritionalInformation"]
     );
   }
 
@@ -29,7 +31,8 @@ class Dish{
         ingredients: value["ingredients"],
         imageReference: value["imageReference"],
         homeCookReference: value["homeCookReference"],
-        price: value["price"]
+        price: value["price"],
+        nutritionalInformation: value["nutritionalInformation"]
     );
   }
 

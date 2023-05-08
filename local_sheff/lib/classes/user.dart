@@ -10,7 +10,7 @@ class AppUser{
   AppUser({required this.userName, required this.userEmail,required this.role,required this.imageReference, required this.postcode});
 
   factory AppUser.fromSnapshot(DataSnapshot snapshot) {
-    Map<String, dynamic> value = Map<String, dynamic>.from(snapshot.value as Map<String, dynamic>);
+    Map<String, dynamic> value = Map<String, dynamic>.from(snapshot.value as Map<dynamic, dynamic>);
     return AppUser(
       imageReference: value['image'],
       role: value['role'],

@@ -10,6 +10,8 @@ import 'package:local_sheff/classes/dish.dart';
 import 'package:local_sheff/classes/user.dart';
 import 'package:local_sheff/screens/customer_screens/cus_dish_screen.dart';
 
+import '../../classes/nutritionalInformation.dart';
+
 class CusBrowseScreen extends StatefulWidget {
   const CusBrowseScreen({super.key});
 
@@ -89,7 +91,8 @@ class _CusBrowseScreenState extends State<CusBrowseScreen> {
                   builder: (BuildContext context, AsyncSnapshot<DatabaseEvent> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
                       AppUser appUser = AppUser.fromSnapshot(snapshot.data!.snapshot);
-                      return CusDishScreen(dish: dish, appUser: appUser);
+                      NutritionalInformation nutritionalInformation = NutritionalInformation.fromJson(dish.nutritionalInformation!);
+                      return CusDishScreen(dish: dish, appUser: appUser, nutritionalInfo: nutritionalInformation,);
                     } else {
                       return Center(child: CircularProgressIndicator());
                     }

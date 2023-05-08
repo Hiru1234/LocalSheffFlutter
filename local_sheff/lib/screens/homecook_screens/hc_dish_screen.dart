@@ -4,11 +4,15 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:local_sheff/classes/dish.dart';
+import 'package:local_sheff/classes/nutritionalInformation.dart';
 
 class HcDishScreen extends StatefulWidget {
   final Dish dish;
+  final NutritionalInformation nutritionalInfo;
 
-  const HcDishScreen({Key? key, required this.dish}) : super(key: key);
+  const HcDishScreen(
+      {Key? key, required this.dish, required this.nutritionalInfo})
+      : super(key: key);
 
   @override
   State<HcDishScreen> createState() => _HcDishScreenState();
@@ -43,6 +47,7 @@ class _HcDishScreenState extends State<HcDishScreen> {
   @override
   Widget build(BuildContext context) {
     final dish = widget.dish;
+    final nutritionalInfo = widget.nutritionalInfo;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -154,6 +159,23 @@ class _HcDishScreenState extends State<HcDishScreen> {
                         ),
                       );
                     }),
+              ),
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+                    child: Text(
+                        "Nutritional data :\n\n"
+                        "   CHOCDF : ${nutritionalInfo.chocdf}\n"
+                        "   ENERC_KCAL : ${nutritionalInfo.enercKcal}\n"
+                        "   FAT : ${nutritionalInfo.fat}\n"
+                        "   FIBTG : ${nutritionalInfo.fibtg}\n"
+                        "   PROCNT : ${nutritionalInfo.procnt}\n",
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'SFProDisplay',
+                            fontSize: 17)),
+                  )
               )
             ]),
           )),

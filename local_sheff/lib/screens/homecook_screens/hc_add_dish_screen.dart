@@ -1,14 +1,18 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:local_sheff/classes/nutritionalInformation.dart';
 import 'package:local_sheff/reusable_widgets/reusable_widget.dart';
 import 'dart:io';
 import 'dart:core';
 
 import 'hc_home_screen.dart';
+import 'package:http/http.dart' as http;
 
 class HcAddDishScreen extends StatefulWidget {
   const HcAddDishScreen({Key? key}) : super(key: key);
@@ -28,6 +32,32 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
   bool displayList = false;
   File? selectedImage;
   String? imageUrl = "";
+  String? foodName = "";
+  //Map<String, dynamic> nutritionalInformation = {};
+  NutritionalInformation? nutritionalInfo;
+
+
+  getFoodInformation() async {
+    final request = http.MultipartRequest(
+        "POST", Uri.parse("https://1fcf-161-74-230-0.ngrok-free.app/predict_food"));
+    final headers = {"Content-type": "multipart/form-data"};
+
+    request.files.add(http.MultipartFile('image',
+        selectedImage !.readAsBytes().asStream(), selectedImage !.lengthSync(),
+        filename: selectedImage !
+            .path
+            .split("/")
+            .last));
+
+    request.headers.addAll(headers);
+    final response = await request.send();
+    http.Response res = await http.Response.fromStream(response);
+    final resJson = jsonDecode(res.body);
+    foodName = resJson['food_name'];
+    Map<String, dynamic> nutritionalInformation = resJson['nutritional_information'];
+    nutritionalInfo = NutritionalInformation.fromJson(nutritionalInformation);
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,9 +117,35 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
                             fontSize: 17,
                           ),
                         )),
+
               const SizedBox(
                 height: 20,
               ),
+              if(selectedImage != null)
+                reusableButton(context, "Get Nutritional Information", () {
+                  getFoodInformation();
+                }, MediaQuery
+                    .of(context)
+                    .size
+                    .width, 50),
+              const SizedBox(
+                height: 20,
+              ),
+              if(foodName == "")
+                const Text("")
+              else
+                Text("Predicted Food Name : $foodName\n\n"
+                    "Nutritional data are\n"
+                    "   CHOCDF : ${nutritionalInfo?.chocdf}\n"
+                    "   ENERC_KCAL : ${nutritionalInfo?.enercKcal}\n"
+                    "   FAT : ${nutritionalInfo?.fat}\n"
+                    "   FIBTG : ${nutritionalInfo?.fibtg}\n"
+                    "   PROCNT : ${nutritionalInfo?.procnt}\n",
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontFamily: 'SFProDisplay',
+                        fontSize: 17)
+                ),
               const SizedBox(
                 height: 30,
               ),
@@ -372,6 +428,8 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
 
                 String uniqueId = "DS${DateTime.now().millisecondsSinceEpoch}";
 
+                Map<String, dynamic>? json = NutritionalInformation.toJson(nutritionalInfo!);
+
                 //Create a Map of data
                 Map<String, dynamic> dataToSend = {
                   'dishName': _dishNameTextController.text,
@@ -379,7 +437,8 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
                   'description': _descriptionTextController.text,
                   'ingredients': ingredients,
                   'imageReference': uniqueFileName,
-                  'homeCookReference': userID
+                  'homeCookReference': userID,
+                  'nutritionalInformation':json
                 };
 
                 db
