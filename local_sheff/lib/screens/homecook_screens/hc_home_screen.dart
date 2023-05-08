@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:local_sheff/screens/homecook_screens/hc_account_screen.dart';
 import 'package:local_sheff/screens/homecook_screens/hc_add_dish_screen.dart';
+import 'package:local_sheff/screens/homecook_screens/hc_custom_dishes_screen.dart';
 import 'package:local_sheff/screens/homecook_screens/hc_dishes_screen.dart';
 import 'package:local_sheff/screens/homecook_screens/hc_due_orders_screen.dart';
 import 'package:local_sheff/screens/start_screen.dart';
@@ -30,6 +31,7 @@ class _HCHomeScreenState extends State<HCHomeScreen> {
     HcDishesScreen(),
     HcAddDishScreen(),
     HcDueOrdersScreen(),
+    HcCustomDishesScreen(),
     HcAccountScreen()
   ];
 
@@ -54,6 +56,10 @@ class _HCHomeScreenState extends State<HCHomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.food_bank_outlined),
             label: 'Orders',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list_alt),
+            label: 'Request Dishes',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

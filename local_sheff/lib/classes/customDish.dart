@@ -6,8 +6,9 @@ class CustomDish{
   String? email;
   String? homeCookId;
   String? instructions;
+  String? customDishId;
 
-  CustomDish({required this.customerId, required this.date, required this.dishName, required this.dishState, required this.homeCookId, required this.email, required this.instructions});
+  CustomDish({required this.customerId, required this.date, required this.dishName, required this.dishState, required this.homeCookId, required this.email, required this.instructions, required this.customDishId});
 
   static CustomDish fromJson(Map<String, dynamic> json) {
     return CustomDish(
@@ -17,7 +18,8 @@ class CustomDish{
         dishState: json["dishState"],
         homeCookId: json["homeCookId"],
         email: json["email"],
-        instructions: json["instructions"]
+        instructions: json["instructions"],
+        customDishId: json["customDishId"]
     );
   }
 }

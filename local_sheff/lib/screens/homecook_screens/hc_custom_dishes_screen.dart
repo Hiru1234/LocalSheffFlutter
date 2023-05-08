@@ -3,26 +3,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:local_sheff/reusable_widgets/reusable_widget.dart';
-import 'package:local_sheff/screens/customer_screens/cus_custom_dish_screen.dart';
+import 'package:local_sheff/screens/homecook_screens/hc_custom_dish_screen.dart';
 
 import '../../classes/customDish.dart';
+import '../../reusable_widgets/reusable_widget.dart';
 
-class CusCustomDishesScreen extends StatefulWidget {
-  const CusCustomDishesScreen({Key? key}) : super(key: key);
+class HcCustomDishesScreen extends StatefulWidget {
+  const HcCustomDishesScreen({Key? key}) : super(key: key);
 
   @override
-  State<CusCustomDishesScreen> createState() => _CusCustomDishesScreenState();
+  State<HcCustomDishesScreen> createState() => _HcCustomDishesScreenState();
 }
 
-class _CusCustomDishesScreenState extends State<CusCustomDishesScreen> {
-
+class _HcCustomDishesScreenState extends State<HcCustomDishesScreen> {
   Stream<List<CustomDish>> getOrders() {
-    final User? user = FirebaseAuth.instance.currentUser;
-    final userID = user?.uid;
     var data = FirebaseFirestore.instance
         .collection("customDishes")
-        .where("customerId", isEqualTo: userID)
         .snapshots()
         .map((snapshot) => snapshot.docs
         .map((doc) => CustomDish.fromJson(doc.data()))
@@ -60,15 +56,16 @@ class _CusCustomDishesScreenState extends State<CusCustomDishesScreen> {
 
   void navigateToCustomOrderScreen(BuildContext context, CustomDish customOrder) async {
     DatabaseReference referenceForName = FirebaseDatabase.instance
-        .ref("Users/${customOrder.homeCookId}/userName");
+        .ref("Users/${customOrder.customerId}/userName");
     DatabaseEvent eventForName = await referenceForName.once();
-    String homeCookName = eventForName.snapshot.value.toString();
+    String customerName = eventForName.snapshot.value.toString();
 
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => CusCustomDishScreen(customDish: customOrder, homeCookName: homeCookName)));
+            builder: (context) => HCustomDishScreen(customDish: customOrder, customerName: customerName)));
   }
+
 
   Widget buildDishes(CustomDish customDish) {
     return Container(
@@ -89,14 +86,14 @@ class _CusCustomDishesScreenState extends State<CusCustomDishesScreen> {
                 fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
-                  "${customDish.date} • ${returnOrderState(customDish.dishState!)}",
+              "${customDish.date} • ${returnOrderState(customDish.dishState!)}",
               style: const TextStyle(
                   color: Colors.black,
                   fontFamily: 'SFProDisplay',
                   fontSize: 16)),
           trailing: const Icon(Icons.receipt),
           onTap: ()  {
-            navigateToCustomOrderScreen(context, customDish);
+            navigateToCustomOrderScreen(context,customDish);
           },
         ));
   }

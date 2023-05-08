@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:local_sheff/classes/dish.dart';
+import 'package:local_sheff/screens/homecook_screens/hc_dish_screen.dart';
 
 class HcDishesScreen extends StatefulWidget {
   const HcDishesScreen({Key? key}) : super(key: key);
@@ -73,111 +74,11 @@ class _HcDishesScreenState extends State<HcDishesScreen> {
           ),
           trailing: const Icon(Icons.more_vert_outlined),
           onTap: () {
-            showGeneralDialog(
-              barrierDismissible: false,
-              transitionDuration: const Duration(milliseconds: 200),
-              context: context,
-              pageBuilder: (BuildContext context, Animation animation,
-                  Animation secondAnimation) {
-                return AlertDialog(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  contentPadding: EdgeInsets.fromLTRB(20, 30, 20, 10),
-                  scrollable: true,
-                  content: SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                      child: SingleChildScrollView(
-                        child: Column(children: <Widget>[
-                          Align(
-                              alignment: Alignment.centerRight,
-                              child: Padding(
-                                padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
-                                child: IconButton(
-                                  icon: const Icon(Icons.close_outlined),
-                                  color: Colors.black,
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              )
-                          ),
-                          Center(
-                            child: Text(
-                              dish.dishName!.toString(),
-                              style: const TextStyle(
-                                  fontSize: 25,
-                                  fontFamily: 'SFProDisplay',
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black),
-                              textAlign: TextAlign.left,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Center(
-                            child: Container(
-                              width: MediaQuery.of(context).size.width * 0.6,
-                              height: MediaQuery.of(context).size.width * 0.6,
-                              child: returnImage(context, dish.imageReference!),
-                            ),
-                          ),
-                          Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-                                child: Text(
-                                  dish.description!.toString(),
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontFamily: 'SFProDisplay',
-                                      color: Colors.black),
-                                  textAlign: TextAlign.left,
-                                ),
-                              )),
-                          const Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-                                child: Text(
-                                  "Ingredients",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontFamily: 'SFProDisplay',
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
-                                  textAlign: TextAlign.left,
-                                ),
-                              )),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: ListView.builder(
-                                padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                                shrinkWrap: true,
-                                itemCount: dish.ingredients?.length,
-                                itemBuilder: (context, index) {
-                                  return ListTile(
-                                    contentPadding:
-                                    EdgeInsets.symmetric(vertical: 4.0),
-                                    dense: true,
-                                    title: Text(
-                                      dish.ingredients?[index],
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontFamily: 'SFProDisplay',
-                                          color: Colors.black),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                  );
-                                }),
-                          ),
-                        ]),
-                      )),
-                );
-              },
-            );
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => HcDishScreen(
+                      dish: dish)));
           },
         ));
   }

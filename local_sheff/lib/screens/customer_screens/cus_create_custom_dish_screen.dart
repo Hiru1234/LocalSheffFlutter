@@ -227,6 +227,7 @@ class _CusCreateCustomDishScreenState extends State<CusCreateCustomDishScreen> {
                   'dishState': CustomDishState.created.toString(),
                   'homeCookId':'',
                   'date': formattedDate,
+                  'customDishId': uniqueId
                 };
 
                 db

@@ -4,8 +4,9 @@ import 'package:local_sheff/classes/customDish.dart';
 
 class CusCustomDishScreen extends StatefulWidget {
   final CustomDish customDish;
+  final String? homeCookName;
 
-  const CusCustomDishScreen({Key? key, required this.customDish}) : super(key: key);
+  const CusCustomDishScreen({Key? key, required this.customDish, required this.homeCookName}) : super(key: key);
 
   @override
   State<CusCustomDishScreen> createState() => _CusCustomDishScreenState();
@@ -27,7 +28,7 @@ class _CusCustomDishScreenState extends State<CusCustomDishScreen> {
         break;
       case "CustomDishState.prepared":
         {
-          state = "This dish was Prepared";
+          state = "This dish can be Collected";
         }
         break;
       case "CustomDishState.completed":
@@ -42,6 +43,7 @@ class _CusCustomDishScreenState extends State<CusCustomDishScreen> {
   @override
   Widget build(BuildContext context) {
     final customDish = widget.customDish;
+    final homeCookName = widget.homeCookName;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -114,7 +116,7 @@ class _CusCustomDishScreenState extends State<CusCustomDishScreen> {
                   Padding(
                     padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
                     child: Text(
-                      customDish.homeCookId!,
+                      homeCookName!,
                       style: const TextStyle(
                           fontSize: 20,
                           fontFamily: 'SFProDisplay',
@@ -147,6 +149,34 @@ class _CusCustomDishScreenState extends State<CusCustomDishScreen> {
                       color: Colors.black),
                   textAlign: TextAlign.left,
                 ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
+                    child: Text(
+                      "My email : ",
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'SFProDisplay',
+                          color: Colors.black),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
+                    child: Text(
+                      customDish.email!,
+                      style: const TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'SFProDisplay',
+                          fontStyle: FontStyle.italic,
+                          color: Colors.black),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ],
               ),
             ]),
           )),
