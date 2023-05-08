@@ -7,6 +7,7 @@ import 'package:local_sheff/screens/customer_screens/cus_account_screen.dart';
 import 'package:local_sheff/screens/customer_screens/cus_browse_screen.dart';
 import 'package:local_sheff/screens/customer_screens/cus_cart_screen.dart';
 import 'package:local_sheff/screens/customer_screens/cus_search_screen.dart';
+import 'package:local_sheff/screens/customer_screens/cus_upload_picture_screen.dart';
 import 'package:local_sheff/screens/start_screen.dart';
 
 class CusHomeScreen extends StatefulWidget {
@@ -28,6 +29,7 @@ class _CusHomeScreenState extends State<CusHomeScreen> {
   final List<Widget> _pages = [
     CusBrowseScreen(),
     CusCartScreen(),
+    CusUploadPictureScreen(),
     CusSearchScreen(),
     CusAccountScreen()
   ];
