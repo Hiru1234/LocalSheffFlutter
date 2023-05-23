@@ -114,7 +114,7 @@ class _HcCustomDishesScreenState extends State<HcCustomDishesScreen> {
               child: Container(
                 color: Colors.white,
                 child: const Text(
-                  "My Custom Dishes",
+                  "Customer Custom Dishes",
                   style: TextStyle(
                       fontSize: 25,
                       fontFamily: 'SFProDisplay',

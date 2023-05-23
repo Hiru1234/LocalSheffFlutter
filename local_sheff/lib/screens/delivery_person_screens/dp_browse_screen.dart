@@ -23,7 +23,6 @@ class _DpBrowseScreenState extends State<DpBrowseScreen> {
   Stream<List<DishOrder>> getOrders() {
     var data = FirebaseFirestore.instance
         .collection("orders")
-        .where("orderState", isEqualTo: OrderState.prepared.toString())
         .where("orderType", isEqualTo: OrderType.delivery.toString())
         .snapshots()
         .map((snapshot) => snapshot.docs

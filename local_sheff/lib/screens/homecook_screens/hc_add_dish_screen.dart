@@ -39,7 +39,7 @@ class _HcAddDishScreenState extends State<HcAddDishScreen> {
 
   getFoodInformation() async {
     final request = http.MultipartRequest(
-        "POST", Uri.parse("https://1fcf-161-74-230-0.ngrok-free.app/predict_food"));
+        "POST", Uri.parse("https://c5e3-92-11-204-123.ngrok-free.app/predict_food"));
     final headers = {"Content-type": "multipart/form-data"};
 
     request.files.add(http.MultipartFile('image',
